@@ -1,0 +1,15 @@
+{
+  "name": "companion-drones",
+  "version": "2.0.0",
+  "title": "Companion Drones 2.0",
+  "author": "Kubiix, Klonan",
+  "contact": "",
+  "homepage": "",
+  "description": "Adds friends",
+  "dependencies": [
+    "base >= 2.0.0",
+    "(?)alien-biomes",
+    "(?)space-exploration"
+  ],
+  "factorio_version": "2.0"
+}
