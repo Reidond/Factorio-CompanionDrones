@@ -5,7 +5,7 @@
   "author": "Kubiix, Klonan",
   "contact": "",
   "homepage": "",
-  "description": "Adds friends",
+  "description": "Adds friends - now to Factorio 2.0",
   "dependencies": [
     "base >= 2.0.0",
     "(?)alien-biomes",
