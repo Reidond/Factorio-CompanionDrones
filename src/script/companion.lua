@@ -1516,7 +1516,7 @@ end
 
 local get_blueprint_area = function(player, offset)
 
-local entities = player.cursor_stack and player.cursor_stack.get_blueprint_entities()
+  local entities = player.cursor_record and player.cursor_record.get_blueprint_entities()
 
   if not entities then
     -- Tile blueprint

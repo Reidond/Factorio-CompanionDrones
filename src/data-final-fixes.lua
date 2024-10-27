@@ -1,1 +1,1 @@
---data.raw["spider-leg"]["companion-leg"].collision_mask = { layers = {} }
+data.raw["spider-leg"]["companion-leg"].collision_mask = { layers = {} }
