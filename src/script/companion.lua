@@ -995,7 +995,6 @@ function Companion:try_to_find_work(search_area)
         end
       end
     end
-
   end
 
   if self.moving_to_destination then
@@ -1018,15 +1017,13 @@ function Companion:try_to_find_work(search_area)
         end
         attempted_cliff_names[entity.name] = true
       end
-    elseif not deconstruction_attempted and entity.is_registered_for_deconstruction(force) then
-      deconstruction_attempted = true
-      if not self.moving_to_destination then
-        self:set_job_destination(entity.position)
+      elseif not deconstruction_attempted and entity.is_registered_for_deconstruction(force) then
+        deconstruction_attempted = true
+        if not self.moving_to_destination then
+          self:set_job_destination(entity.position)
       end
     end
-
   end
-
 end
 
 function Companion:on_player_placed_equipment(event)
