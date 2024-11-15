@@ -1,4 +1,50 @@
 ---------------------------------------------------------------------------------------------------
+Version: 2.0.8
+Date: 2024-11-10
+  Bugfixes:
+    - Fixed construction of entities with quality
+    - Fixed inserting modules with quality
+    - Fixed upgrading entities with quality
+---------------------------------------------------------------------------------------------------
+Version: 2.0.7
+Date: 2024-11-08
+  Bugfixes:
+    - Bitters now fight with Companions. (thanks Keifer9)
+    - Fix crash when trying to place a blueprint from blueprint book, then the blueprint contains another blueprint book. (thanks Nirahiel)
+---------------------------------------------------------------------------------------------------
+Version: 2.0.6
+Date: 2024-11-08
+  Bugfixes:
+    - Fix crash when trying to get item from players inventory while in map view.
+  Changes:
+    - Attacking bitters from map view is disabled to nerf Companion a bit.
+    - Constructing from map view is disabled to nerf Companion a bit.
+  Info:
+    - Bitters still don't fight with Companions - to be fixed latein next version.
+---------------------------------------------------------------------------------------------------
+Version: 2.0.5
+Date: 2024-11-01
+  Bugfixes:
+    - Fix crash when trying to place a blueprint containing entity with modules.
+    - Fix crash when pasting 'blueprint' from cut/copy.
+  Info:
+    - Constructing from map view currently doesn't work.
+---------------------------------------------------------------------------------------------------
+Version: 2.0.4
+Date: 2024-10-31
+  Bugfixes:
+    - Fix crash when trying to place a blueprint from blueprint book (for now not-so-fine workaround).
+---------------------------------------------------------------------------------------------------
+Version: 2.0.3
+Date: 2024-10-29
+  Bugfixes:
+    - Fix crash when trying to place equipment to players armor.
+  Changes:
+    - Removed forgotten "armor" category from Companion equipment grid from previous debugging.
+    - Fixed Companion equipment grid size from 10x4 to 10x2
+  Info:
+    - If you have placed equipment in bottom 2 lanes, you can get it back by removing something from grid and then Ctrl+Clik on the empty grid slot.
+---------------------------------------------------------------------------------------------------
 Version: 2.0.2
 Date: 2024-10-26
   Bugfixes:
