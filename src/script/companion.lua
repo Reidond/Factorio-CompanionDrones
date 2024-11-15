@@ -1274,7 +1274,7 @@ local on_player_placed_equipment = function(event)
 
 
   local opened = player.opened
-  if not (opened and opened.valid) then return end
+  if not (opened and opened.valid and opened.prototype.name == "companion") then return end
 
   local companion = get_companion(opened.unit_number)
   if not companion then return end
@@ -1288,7 +1288,7 @@ local on_player_removed_equipment = function(event)
   if player.opened_gui_type ~= defines.gui_type.entity then return end
 
   local opened = player.opened
-  if not (opened and opened.valid) then return end
+  if not (opened and opened.valid and opened.prototype.name == "companion") then return end
 
   local companion = get_companion(opened.unit_number)
   if not companion then return end
