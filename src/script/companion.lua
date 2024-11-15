@@ -653,8 +653,9 @@ function Companion:take_item(item, target)
   if not target_inventory then return end
 
   while true do
-    local stack = target_inventory.find_item_stack(item.name)
+    local stack = target_inventory.find_item_stack({ name = item.name, quality = item.quality })
     if not stack then break end
+
     local given = self.entity.insert(stack)
     if given == 0 then break end
     if given == stack.count then
