@@ -649,7 +649,8 @@ function Companion:on_spider_command_completed()
 end
 
 function Companion:take_item(item, target)
-  local target_inventory = target.get_main_inventory() or target.get_output_inventory()
+  local target_inventory = get_inventory(target)
+
   if not target_inventory then return end
 
   while true do
@@ -812,6 +813,26 @@ function Companion:try_to_find_targets(search_area)
 
 end
 
+function get_inventory(entity)
+  if entity.is_player() then
+    if not entity.controller_type or entity.controller_type  ~= defines.controllers.character then return end
+
+    return entity.get_main_inventory() or entity.get_output_inventory()
+  end
+
+  if entity.type == "spider-vehicle" then
+    return entity.get_inventory(defines.inventory.spider_trunk)
+  end
+
+  if entity.type == "car" then
+    return entity.get_inventory(defines.inventory.car_trunk)
+  end
+
+  if entity.type == "cargo-wagon" then
+    return entity.get_inventory(defines.inventory.cargo_wagon)
+  end
+end
+
 function Companion:find_and_take_from_player(item)
   local count = self.player.get_item_count(item.name)
   if count >= item.count then
@@ -822,7 +843,8 @@ function Companion:find_and_take_from_player(item)
 
   local vehicle = self.player.vehicle
   if vehicle then
-    local count = vehicle.get_item_count(item.name)
+    local target_inventory = get_inventory(vehicle)
+    local count = target_inventory.get_item_count(itemWithQuality)
     if count >= item.count then
       if self:take_item(item, vehicle) then
         return true
@@ -830,7 +852,17 @@ function Companion:find_and_take_from_player(item)
     end
     local train = vehicle.train
     if train then
-      local count = train.get_item_count(item.name)
+      local train_contents = train.get_contents()
+
+      local count = 0
+
+      for _, item_in_train in pairs(train_contents) do
+        if (item_in_train.name == item.name and item_in_train.quality == item.quality) then
+          count = item_in_train.count
+          break
+        end
+      end
+
       if count >= item.count then
         if self:take_item_from_train(item, train) then
           return true
