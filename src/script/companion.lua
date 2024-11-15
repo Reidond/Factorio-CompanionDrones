@@ -110,7 +110,7 @@ local adjust_follow_behavior = function(player)
   local count = 0
   local guys = {}
 
-  local surface = player.surface
+  local surface = player.physical_surface
 
   for unit_number, bool in pairs (player_data.companions) do
     local companion = get_companion(unit_number)
@@ -142,7 +142,7 @@ local adjust_follow_behavior = function(player)
   end
 
   local offset = {length, 0}
-  local position = player.position
+  local position = player.physical_position
   for k, companion in pairs (guys) do
     local angle = (k / count) + dong
     local follow_offset = rotate_vector(offset, angle)
@@ -415,7 +415,7 @@ function Companion:try_to_refuel()
     return
   end
 
-  if self:distance(self.player.position) <= follow_range then
+  if self:distance(self.player.physical_position) <= follow_range then
     for k, item in pairs (get_fuel_items()) do
       if self:find_and_take_from_player({name = item.name, count = item.count}) then
         return
@@ -437,7 +437,7 @@ end
 function Companion:search_for_nearby_work()
   if not self:player_wants_construction() then return end
   if not self.can_construct then return end
-  if self.entity.surface ~= self.player.surface then return end
+  if self.entity.surface ~= self.player.physical_surface then return end
   local cell = self.entity.logistic_cell
   if not cell then return end
   local range = cell.construction_radius + 16
@@ -449,7 +449,7 @@ end
 function Companion:search_for_nearby_targets()
   if not self:player_wants_attack() then return end
   if not self.can_attack then return end
-  if self.entity.surface ~= self.player.surface then return end
+  if self.entity.surface ~= self.player.physical_surface then return end
   local range = 32
   local origin = self.entity.position
   local area = {{origin.x - range, origin.y - range}, {origin.x + range, origin.y + range}}
@@ -583,7 +583,7 @@ function Companion:try_to_shove_inventory()
       name = "inserter-beam",
       source = self.entity,
       target = self.player.character,
-      target_position = self.player.position,
+      target_position = self.player.physical_position,
       force = self.entity.force,
       position = self.entity.position,
       duration = math.min(math.max(math.ceil(total_inserted / 5), 10), 60),
@@ -601,7 +601,7 @@ function Companion:can_go_inactive()
   if self.out_of_energy then return end
   if self:is_busy() then return end
   if self:has_items() then return end
-  if self:distance(self.player.position) > follow_range then return end
+  if self:distance(self.player.physical_position) > follow_range then return end
   return true
 end
 
@@ -609,12 +609,12 @@ function Companion:return_to_player()
 
   if not self.player.valid then return end
 
-  if self.player.surface ~= self.entity.surface then
+  if self.player.physical_surface ~= self.entity.surface then
     return
   end
 
   self.moving_to_destination = nil
-  local distance = self:distance(self.player.position)
+  local distance = self:distance(self.player.physical_position)
 
   if distance <= follow_range then
     self:try_to_shove_inventory()
@@ -622,7 +622,7 @@ function Companion:return_to_player()
   end
 
   if distance > 500 then
-    self:teleport(self.player.position, self.entity.surface)
+    self:teleport(self.player.physical_position, self.entity.surface)
   end
 
   if self:can_go_inactive() then
@@ -637,13 +637,13 @@ function Companion:return_to_player()
     return
   end
 
-  self.entity.autopilot_destination = self.player.position
+  self.entity.autopilot_destination = self.player.physical_position
 end
 
 function Companion:on_spider_command_completed()
   self.moving_to_destination = nil
-  local distance = self:distance(self.player.position)
-  if distance <= follow_range then
+  local distance = self:distance(self.player.physical_position)
+  if not self.is_busy_for_construction and distance <= follow_range then
     self:try_to_shove_inventory()
   end
 end
@@ -846,7 +846,7 @@ function Companion:try_to_find_work(search_area)
   local entities = self.entity.surface.find_entities_filtered{area = search_area, force = force}
 
   local current_items = self:get_inventory().get_contents()
-  local can_take_from_player = self:distance(self.player.position) <= follow_range and self.entity.surface == self.player.surface
+  local can_take_from_player = self:distance(self.player.physical_position) <= follow_range and self.entity.surface == self.player.physical_surface
 
   local has_or_can_take = function(item)
     if current_items[item.name] or 0 >= item.count then
@@ -1089,14 +1089,10 @@ local perform_job_search = function(player, player_data)
     return
   end
 
-  local position = player.position
+  local position = player.physical_position
   local search_area = {{area[1][1] + position.x, area[1][2] + position.y}, {area[2][1] + position.x, area[2][2] + position.y}}
 
   free_companion:try_to_find_work(search_area)
-
-  --player.surface.create_entity{name = "flying-text", position = search_area[1], text = player_data.last_job_search_offset}
-  --player.surface.create_entity{name = "flying-text", position = search_area[2], text = player_data.last_job_search_offset}
-
 end
 
 local perform_attack_search = function(player, player_data)
@@ -1120,14 +1116,10 @@ local perform_attack_search = function(player, player_data)
     return
   end
 
-  local position = player.position
+  local position = player.physical_position
   local search_area = {{area[1][1] + position.x, area[1][2] + position.y}, {area[2][1] + position.x, area[2][2] + position.y}}
 
   free_companion:try_to_find_targets(search_area)
-
-  --player.surface.create_entity{name = "flying-text", position = search_area[1], text = player_data.last_attack_search_offset}
-  --player.surface.create_entity{name = "flying-text", position = search_area[2], text = player_data.last_attack_search_offset}
-
 end
 
 local process_specific_job_queue = function(player_index, player_data)
@@ -1176,7 +1168,6 @@ local check_job_search = function(event)
       end
     end
   end
-
 end
 
 local update_active_companions = function(event)
@@ -1328,8 +1319,8 @@ local on_player_changed_surface = function(event)
     --If there is no character, lets just not go with the player.
     return
   end
-  local surface = player.surface
-  local position = player.position
+  local surface = player.physical_surface
+  local position = player.physical_position
 
   for unit_number, bool in pairs (player_data.companions) do
     local companion = get_companion(unit_number)
@@ -1360,8 +1351,8 @@ local on_player_joined_game = function(event)
   if not player_data then return end
 
   local player = game.get_player(event.player_index)
-  local surface = player.surface
-  local position = player.position
+  local surface = player.physical_surface
+  local position = player.physical_position
 
   for unit_number, bool in pairs (player_data.companions) do
     local companion = get_companion(unit_number)
@@ -1510,7 +1501,7 @@ local on_player_deconstructed_area = function(event)
     return
   end
 
-  dissect_and_queue_area(event.player_index, player.position, event.area)
+  dissect_and_queue_area(event.player_index, player.physical_position, event.area)
 
 end
 
@@ -1555,7 +1546,7 @@ local on_pre_build = function(event)
   -- I am lazy, not going to bother with rotations and flips...
 
   local area = get_blueprint_area(player, event.position)
-  dissect_and_queue_area(event.player_index, player.position, area)
+  dissect_and_queue_area(event.player_index, player.physical_position, area)
 
 
 end
@@ -1564,8 +1555,8 @@ local on_player_created = function(event)
   local player = game.get_player(event.player_index)
   if not player then return end
 
-  local surface = player.surface
-  local position = player.position
+  local surface = player.physical_surface
+  local position = player.physical_position
 
   for k = 1, 2 do
     local entity = surface.create_entity
