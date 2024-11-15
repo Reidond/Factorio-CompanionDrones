@@ -585,8 +585,8 @@ local companion_grid =
   type = "equipment-grid",
   name = "companion-equipment-grid",
   width = 10,
-  height = 4,
-  equipment_categories = {"companion", "armor"}
+  height = 2,
+  equipment_categories = {"companion" }
 }
 
 
