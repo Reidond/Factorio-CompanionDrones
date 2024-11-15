@@ -1082,6 +1082,8 @@ local perform_job_search = function(player, player_data)
   local free_companion = get_free_companion_for_construction(player_data)
   if not free_companion then return end
 
+  if not player.controller_type or player.controller_type  ~= defines.controllers.character then return end
+
   player_data.last_job_search_offset = player_data.last_job_search_offset + 1
   local area = search_offsets[player_data.last_job_search_offset]
   if not area then
@@ -1098,6 +1100,8 @@ end
 local perform_attack_search = function(player, player_data)
 
   if not player.is_shortcut_toggled("companion-attack-toggle") then return end
+
+  if not player.controller_type or player.controller_type  ~= defines.controllers.character then return end
 
   local free_companion
   for unit_number, bool in pairs (player_data.companions) do
