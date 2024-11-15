@@ -905,6 +905,11 @@ function Companion:try_to_find_work(search_area)
     if not entity.valid then break end
 
     local entity_type = entity.type
+    local quality = "normal"
+
+    if entity.quality then
+      quality = entity.quality.name
+    end
 
     if not deconstruction_attempted and entity.is_registered_for_deconstruction(force) then
       if entity.type ~= "vehicle" or entity.speed < 0.4 then
@@ -952,6 +957,7 @@ function Companion:try_to_find_work(search_area)
           end
         else
           local item = upgrade_target.items_to_place_this[1]
+          item.quality = quality
           if has_or_can_take(item) then
             if not self.moving_to_destination then
               self:set_job_destination(entity.position)
