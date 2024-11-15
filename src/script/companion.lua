@@ -1505,33 +1505,58 @@ local on_player_deconstructed_area = function(event)
 
 end
 
-local get_blueprint_area = function(player, offset)
+local function get_all_blueprint_entities(blueprint_record)
+  local entities = {}
 
-  local entities = player.cursor_record and player.cursor_record.get_blueprint_entities()
-
-  if not entities then
-    -- Tile blueprint
-    local r = dissect_area_size
-    return {left_top = {x = offset.x - r, y = offset.y - r}, right_bottom = {x = offset.x + r, y = offset.y + r}}
+  -- Check if the item is a blueprint book
+  if blueprint_record.type == "blueprint-book" then
+    -- Recursively process each item inside the book
+    for _, item in pairs(blueprint_record.contents) do
+      local nested_entities = get_all_blueprint_entities(item)
+      for _, nested_entity in pairs(nested_entities) do
+        table.insert(entities, nested_entity)
+      end
+    end
+  elseif blueprint_record.type == "blueprint" then
+    -- Add entities if it's a single blueprint
+    local blueprint_entities = blueprint_record.get_blueprint_entities()
+    if blueprint_entities then
+      for _, entity in pairs(blueprint_entities) do
+        table.insert(entities, entity)
+      end
+    end
   end
 
+  return entities
+end
+
+local get_blueprint_area = function(player, offset)
+  local entities = {}
+  local max = 0
   local x1, y1, x2, y2
-  for k, entity in pairs (entities) do
-    local position = entity.position
+  local position
+
+  if player.cursor_stack and player.cursor_stack.valid_for_read and player.cursor_stack.count > 0 then
+    entities = get_all_blueprint_entities(player.cursor_stack)
+  elseif player.cursor_record.type == "blueprint" or player.cursor_record.type == "blueprint-book" then
+    entities = get_all_blueprint_entities(player.cursor_record)
+  end
+
+  if #entities == 0 then
+    return {left_top = {x = offset.x - max, y = offset.y - max}, right_bottom = {x = offset.x + max, y = offset.y + max}}
+  end
+
+  for _, entity in pairs (entities) do
+    position = entity.position
     x1 = math.min(x1 or position.x, position.x)
     y1 = math.min(y1 or position.y, position.y)
     x2 = math.max(x2 or position.x, position.x)
     y2 = math.max(y2 or position.y, position.y)
+
+    max = math.max(max, math.abs(x1), math.abs(x2), math.abs(y1), math.abs(y2))
   end
 
-  -- I am lazy, not going to bother with rotations and flips...
-  -- So just get the max area
-  local lazy = true
-  if lazy then
-    local r = math.min(x2 - x1, y2 - y1)
-    return {left_top = {x = offset.x - r, y = offset.y - r}, right_bottom = {x = offset.x + r, y = offset.y + r}}
-  end
-
+  return {left_top = {x = offset.x - max, y = offset.y - max}, right_bottom = {x = offset.x + max, y = offset.y + max}}
 end
 
 local on_pre_build = function(event)
