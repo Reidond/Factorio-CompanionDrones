@@ -290,9 +290,9 @@ end
 function Companion:set_speed(speed)
   if speed == self.speed then return end
   self.speed = speed
-  --self:say(speed)
+  -- self:say(speed)
     local ratio = speed/(base_speed * get_speed_boost(self.entity.burner))
-  --self:say(ratio)
+  -- self:say(ratio)
   if ratio <= 1 then
     self:clear_speed_sticker()
   else
@@ -332,7 +332,9 @@ function Companion:check_equipment()
 
   local network = self.entity.logistic_network
   local max_robots = (network and network.robot_limit) or 0
+  self.player.print(string.format("network max robots %d", max_robots))
   self.can_construct = max_robots > 0
+  self.player.print(string.format("can construct %s", self.can_construct))
   if self.can_construct then
     self:set_robot_stack()
   else
@@ -435,14 +437,27 @@ function Companion:update_state_flags()
 end
 
 function Companion:search_for_nearby_work()
-  if not self:player_wants_construction() then return end
-  if not self.can_construct then return end
-  if self.entity.surface ~= self.player.physical_surface then return end
+  if not self:player_wants_construction() then
+    self.player.print("no construction found")
+    return
+  end
+  if not self.can_construct then
+    self.player.print("cannot constuct")
+    return
+  end
+  if self.entity.surface ~= self.player.physical_surface then
+    self.player.print(string.format("self.entity.surface ~= self.player.physical_surface (%d ~= %d)", self.entity.surface, self.player.physical_surface))
+    return
+  end
   local cell = self.entity.logistic_cell
-  if not cell then return end
+  if not cell then 
+    self.player.print("not cell")
+    return
+  end
   local range = cell.construction_radius + 16
   local origin = self.entity.position
   local area = {{origin.x - range, origin.y - range}, {origin.x + range, origin.y + range}}
+  self.player.print("try to find work")
   self:try_to_find_work(area)
 end
 
@@ -471,6 +486,7 @@ function Companion:update()
 
   self:update_state_flags()
 
+  self.player.print(string.format("was_busy and not self.is_busy_for_construction (%s and not %s)", was_busy, not self.is_busy_for_construction))
   if was_busy and not self.is_busy_for_construction then
     --So we were building, and now we are finished, lets try to find some work nearby
     self:search_for_nearby_work()
@@ -486,11 +502,13 @@ function Companion:update()
     self:return_to_player()
   end
 
-  --self:say("U")
+  -- self:say("U")
 end
 
 function Companion:say(string)
-  self.entity.surface.create_entity{name = "tutorial-flying-text", position = {self.entity.position.x, self.entity.position.y - 2.5}, text = string or "??"}
+  self.player.create_local_flying_text{
+    position = {self.entity.position.x, self.entity.position.y - 2.5}, text = string or "??"
+  }
 end
 
 function Companion:on_destroyed()
@@ -755,7 +773,7 @@ function Companion:attack(entity)
 
   if not self:player_wants_attack() then return end
 
-  --self:say("Attacking "..entity.name.. " "..self.entity.force.name.." "..entity.force.name)
+  self:say("Attacking "..entity.name.. " "..self.entity.force.name.." "..entity.force.name)
   local position = self.entity.position
   for k, offset in pairs  {0, -0.25, 0.25} do
     local projectile = self.entity.surface.create_entity
@@ -1028,12 +1046,12 @@ end
 
 function Companion:on_player_placed_equipment(event)
   self:set_active()
-  --self:say("Equipment added")
+  self:say("Equipment added")
 end
 
 function Companion:on_player_removed_equipment(event)
   self:set_active()
-  --self:say("Equipment removed")
+  self:say("Equipment removed")
 end
 
 function Companion:teleport(position, surface)
@@ -1162,8 +1180,9 @@ local perform_attack_search = function(player, player_data)
   free_companion:try_to_find_targets(search_area)
 end
 
-local process_specific_job_queue = function(player_index, player_data)
+local process_specific_job_queue = function(player, player_index, player_data)
 
+  player.print(serpent.block(script_data.specific_job_search_queue))
   local areas = script_data.specific_job_search_queue[player_index]
   local i, area = next(areas)
 
@@ -1174,12 +1193,14 @@ local process_specific_job_queue = function(player_index, player_data)
 
   local free_companion = get_free_companion_for_construction(player_data)
   if not free_companion then
+    player.print("no free companion for specific job queue")
     return
   end
 
-  --free_companion:say(i)
-  --free_companion.entity.surface.create_entity{name = "flying-text", position = area[1], text = i}
-  --free_companion.entity.surface.create_entity{name = "flying-text", position = area[2], text = i}
+  free_companion:say(string.format("process_specific_job_queue %d", i))
+  free_companion.player.create_local_flying_text{position = area[1], text = string.format("process_specific_job_queue %d", area[1])}
+  free_companion.player.create_local_flying_text{position = area[2], text = string.format("process_specific_job_queue %d", area[2])}
+
   if free_companion:distance(area[1]) < max_distance then
     free_companion:try_to_find_work(area)
   end
@@ -1197,13 +1218,18 @@ local check_job_search = function(event)
   for player_index, player_data in pairs(script_data.player_data) do
     if (player_index + event.tick) % job_mod == 0 then
       local player = players[player_index]
+      -- player.print("check job search passed")
       if player.connected then
+        -- player.print("check job search player connected")
         local specific_areas = job_search_queue[player_index]
         if specific_areas then
-          process_specific_job_queue(player_index, player_data)
+          player.print("check job search specific areas")
+          process_specific_job_queue(player, player_index, player_data)
         else
+          -- player.print("check job search no specific areas")
           perform_job_search(player, player_data)
         end
+        -- player.print("check job search attack search")
         perform_attack_search(player, player_data)
       end
     end
@@ -1513,7 +1539,7 @@ end
 
 local dissect_area_size = 32
 
-local dissect_and_queue_area = function(player_index, player_pos, area)
+local dissect_and_queue_area = function(player, player_index, player_pos, area)
   local player_queue = script_data.specific_job_search_queue[player_index]
   if not player_queue then
     player_queue = {}
@@ -1523,6 +1549,7 @@ local dissect_and_queue_area = function(player_index, player_pos, area)
   local xmin = math.min(player_pos.x + max_distance, area.right_bottom.y)
   local ymax = math.max(player_pos.y - max_distance, area.left_top.y)
   local ymin = math.min(player_pos.y + max_distance, area.right_bottom.y)
+  player.print(string.format("area.left_top.x = "))
 
   local count = #player_queue
   for x = xmin, xmax, dissect_area_size do
@@ -1610,9 +1637,10 @@ local on_pre_build = function(event)
 
   -- I am lazy, not going to bother with rotations and flips...
 
-  local area = get_blueprint_area(player, event.position)
-  dissect_and_queue_area(event.player_index, player.physical_position, area)
+  player.create_local_flying_text{text="adding blueprint build area to queue", position=event.position}
 
+  local area = get_blueprint_area(player, event.position)
+  dissect_and_queue_area(player, event.player_index, player.physical_position, area)
 
 end
 
