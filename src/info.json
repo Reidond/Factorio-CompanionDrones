@@ -1,10 +1,10 @@
 {
   "name": "companion-drones",
-  "version": "2.0.9",
+  "version": "2.0.11",
   "title": "Companion Drones 2.0",
-  "author": "kubiix, Klonan",
+  "author": "kubiix, Klonan, Reidond",
   "contact": "",
-  "homepage": "",
+  "homepage": "https://github.com/Reidond/Factorio-CompanionDrones",
   "description": "Adds friends - now to Factorio 2.0",
   "dependencies": [
     "base >= 2.0.0",

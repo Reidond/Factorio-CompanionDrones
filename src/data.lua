@@ -13,9 +13,9 @@ bot.energy_per_move = "0J"
 bot.min_to_charge = 0
 bot.max_to_charge = 0
 bot.working_sound = nil
-bot.minable = {name = "fish", amount = 0, mining_time = 1}
-bot.selection_box = {{-0.25,-0.25}, {0.25,0.25}}
-bot.cargo_centered = {0, -1}
+bot.minable = { name = "fish", amount = 0, mining_time = 1 }
+bot.selection_box = { { -0.25, -0.25 }, { 0.25, 0.25 } }
+bot.cargo_centered = { 0, -1 }
 bot.selectable_in_game = false
 bot.draw_cargo = true
 bot.max_health = 9999999
@@ -36,7 +36,7 @@ bot.smoke = nil
 bot.water_reflection = nil
 bot.placeable_by =
 {
-  {item = "companion-construction-robot", count = 1}
+  { item = "companion-construction-robot", count = 1 }
 }
 bot.created_effect =
 {
@@ -65,14 +65,14 @@ local bot_item =
   place_result = "companion-construction-robot",
   stack_size = 500,
   hidden = true,
-  flags = {"only-in-cursor"}
+  flags = { "only-in-cursor" }
 }
 
 local equipment =
 {
   type = "roboport-equipment",
   name = "companion-roboport-equipment",
-  localised_name = {"companion-roboport"},
+  localised_name = { "companion-roboport" },
   take_result = "companion-roboport-equipment",
   sprite =
   {
@@ -120,14 +120,14 @@ local equipment =
     animation_speed = 0.5
   },
 
-  recharging_light = {intensity = 0.4, size = 5},
-  stationing_offset = {0, -2},
-  charging_station_shift = {0, -2},
+  recharging_light = { intensity = 0.4, size = 5 },
+  stationing_offset = { 0, -2 },
+  charging_station_shift = { 0, -2 },
   charging_station_count = 2,
   charging_distance = 0,
   charging_threshold_distance = 0,
   robot_vertical_acceleration = 10,
-  categories = {"companion"}
+  categories = { "companion" }
 }
 
 local item_category =
@@ -142,7 +142,7 @@ local equipment_item =
 {
   type = "item",
   name = "companion-roboport-equipment",
-  localised_name = {"companion-roboport"},
+  localised_name = { "companion-roboport" },
   icons =
   {
     {
@@ -167,12 +167,12 @@ local attach_beam_graphics = require("data/beam_sprites")
 local build_beam = util.copy(data.raw["beam"]["electric-beam-no-sound"])
 build_beam.name = "companion-build-beam"
 build_beam.action = nil
-attach_beam_graphics(build_beam, nil, nil, {0, 1, 0}, {0, 1, 0})
+attach_beam_graphics(build_beam, nil, nil, { 0, 1, 0 }, { 0, 1, 0 })
 
 local deconstruct_beam = util.copy(data.raw["beam"]["electric-beam-no-sound"])
 deconstruct_beam.name = "companion-deconstruct-beam"
 deconstruct_beam.action = nil
-attach_beam_graphics(deconstruct_beam, nil, nil, {1, 0, 0}, {1, 0, 0})
+attach_beam_graphics(deconstruct_beam, nil, nil, { 1, 0, 0 }, { 1, 0, 0 })
 
 local inserter_beam = util.copy(util.copy(data.raw["beam"]["laser-beam"]))
 inserter_beam.name = "inserter-beam"
@@ -201,7 +201,7 @@ inserter_beam.name = "inserter-beam"
 --inserter_beam.ending = util.empty_sprite()
 --inserter_beam.ending.repeat_count = 8
 --inserter_beam.light_animations = nil
-inserter_beam.target_offset = {0, 0}
+inserter_beam.target_offset = { 0, 0 }
 inserter_beam.random_target_offset = false
 inserter_beam.working_sound = nil
 inserter_beam.damage_interval = 9999999
@@ -210,19 +210,19 @@ inserter_beam.action = nil
 
 local scale = 0.6
 local leg_scale = 1
-local arguments = {name = "spidertron"}
+local arguments = { name = "spidertron" }
 local drone =
 {
   type = "spider-vehicle",
   name = "companion",
-  localised_name = {"companion"},
-  collision_box = {{-1 * scale, -1 * scale}, {1 * scale, 1 * scale}},
-  selection_box = {{-1 * scale, -1 * scale}, {1 * scale, 1 * scale}},
-  drawing_box = {{-3 * scale, -4 * scale}, {3 * scale, 2 * scale}},
+  localised_name = { "companion" },
+  collision_box = { { -1 * scale, -1 * scale }, { 1 * scale, 1 * scale } },
+  selection_box = { { -1 * scale, -1 * scale }, { 1 * scale, 1 * scale } },
+  drawing_box = { { -3 * scale, -4 * scale }, { 3 * scale, 2 * scale } },
   icon = "__companion-drones__/drone-icon.png",
   icon_size = 200,
-  mined_sound = {filename = "__core__/sound/deconstruct-large.ogg",volume = 0.8},
-  open_sound = { filename = "__base__/sound/spidertron/spidertron-door-open.ogg", volume= 0.35 },
+  mined_sound = { filename = "__core__/sound/deconstruct-large.ogg", volume = 0.8 },
+  open_sound = { filename = "__base__/sound/spidertron/spidertron-door-open.ogg", volume = 0.35 },
   close_sound = { filename = "__base__/sound/spidertron/spidertron-door-close.ogg", volume = 0.4 },
   sound_minimum_speed = 0.3,
   sound_scaling_ratio = 0.1,
@@ -250,9 +250,9 @@ local drone =
   weight = 1,
   braking_force = 1,
   friction_force = 1,
-  flags = {"placeable-neutral", "player-creation", "placeable-off-grid"},
-  collision_mask = { layers = { trigger_target = true }},
-  minable = {result = "companion", mining_time = 1},
+  flags = { "placeable-neutral", "player-creation", "placeable-off-grid" },
+  collision_mask = { layers = { trigger_target = true } },
+  minable = { result = "companion", mining_time = 1 },
   max_health = 250,
   resistances =
   {
@@ -309,20 +309,20 @@ local drone =
   energy_source =
   {
     type = "burner",
-    fuel_categories = {"chemical"},
+    fuel_categories = { "chemical" },
     effectivity = 1,
     fuel_inventory_size = 3,
     smoke =
     {
       {
         name = "train-smoke",
-        deviation = {0.3, 0.3},
+        deviation = { 0.0, 0.0 },
         frequency = 100,
-        position = {0, 0},
+        position = { 0, 0 },
         starting_frame = 0,
         starting_frame_deviation = 60,
-        height = 2,
-        height_deviation = 0.5,
+        height = 0,
+        height_deviation = 0,
         starting_vertical_speed = -0.2,
         starting_vertical_speed_deviation = 0.1
       }
@@ -335,13 +335,13 @@ local drone =
   {
     legs =
     {
-       { -- 1
-         leg = "companion-leg",
-         mount_position = {0, -1},
-         ground_position = {0, -1},
-         walking_group = 1,
-         leg_hit_the_ground_trigger = nil
-       }
+      { -- 1
+        leg = "companion-leg",
+        mount_position = { 0, -1 },
+        ground_position = { 0, -1 },
+        walking_group = 1,
+        leg_hit_the_ground_trigger = nil
+      }
     },
     military_target = "spidertron-military-target"
   },
@@ -349,8 +349,8 @@ local drone =
   minimap_representation =
   {
     filename = "__companion-drones__/drone-map.png",
-    flags = {"icon"},
-    size = {128, 128},
+    flags = { "icon" },
+    size = { 128, 128 },
     scale = 0.25
   }
 
@@ -375,14 +375,14 @@ drone.graphics_set.light =
       scale = 1,
       width = 200,
       height = 200,
-      shift = {0, -1}
+      shift = { 0, -1 }
     },
     source_orientation_offset = 0,
-    shift = {0, (-200/32)- 0.5},
+    shift = { 0, (-200 / 32) - 0.5 },
     add_perspective = false,
     size = 2,
     intensity = 0.6,
-    color = {r = 0.92, g = 0.77, b = 0.3}
+    color = { r = 0.92, g = 0.77, b = 0.3 }
   }
 }
 drone.graphics_set.eye_light.size = 0
@@ -392,12 +392,13 @@ local leg =
   type = "spider-leg",
   name = "companion-leg",
 
-  localised_name = {"entity-name.spidertron-leg"},
+  localised_name = { "entity-name.spidertron-leg" },
   collision_box = nil,
-  collision_mask = { layers = {}},
-  selection_box = {{-0, -0}, {0, 0}},
+  collision_mask = { layers = {} },
+  selection_box = { { -0, -0 }, { 0, 0 } },
   icon = "__base__/graphics/icons/spidertron.png",
-  icon_size = 64, icon_mipmaps = 4,
+  icon_size = 64,
+  icon_mipmaps = 4,
   walking_sound_volume_modifier = 0,
   target_position_randomisation_distance = 0,
   minimal_step_size = 0,
@@ -418,26 +419,33 @@ for x, field in pairs(leg.graphics_set) do
   leg.graphics_set[x] = nil
 end
 
-local layers = drone.graphics_set.base_animation.layers
-for k, layer in pairs (layers) do
-  layer.repeat_count = 8
+local function make_stripes(count, filename)
+  local stripe = { filename = filename, width_in_frames = 1, height_in_frames = 1 }
+  local stripes = {}
+  for i = 1, count do
+    stripes[i] = stripe
+  end
+  return stripes
 end
 
-table.insert(layers, 1,
-{
-  filename = "__base__/graphics/entity/rocket-silo/rocket-jet.png",
-  priority = "medium",
-  blend_mode = "additive",
-  draw_as_glow = true,
-  width = 172,
-  height = 256,
-  frame_count = 8,
-  line_length = 8,
-  animation_speed = 0.5,
-  scale = 1.13/8,
-  shift = util.by_pixel(-0.5, 20),
-  direction_count = 1
-})
+local layers = drone.graphics_set.base_animation.layers
+for k, layer in pairs(layers) do
+  layer = {
+    stripes = make_stripes(8 * 4, "__base__/graphics/entity/rocket-silo/rocket-jet.png"),
+    priority = "medium",
+    blend_mode = "additive",
+    draw_as_glow = true,
+    width = 172,
+    height = 256,
+    frame_count = 8,
+    line_length = 8,
+    animation_speed = 0.5,
+    scale = 1.13 / 8,
+    shift = util.by_pixel(-0.5, 20),
+    direction_count = 1,
+    repeat_count = 8
+  }
+end
 
 local drone_item =
 {
@@ -458,7 +466,7 @@ local gun =
 {
   type = "active-defense-equipment",
   name = "companion-defense-equipment",
-  localised_name = {"companion-laser"},
+  localised_name = { "companion-laser" },
   take_result = "companion-defense-equipment",
   sprite =
   {
@@ -513,14 +521,14 @@ local gun =
   },
 
   automatic = true,
-  categories = {"companion"}
+  categories = { "companion" }
 }
 
 local gun_item =
 {
   type = "item",
   name = "companion-defense-equipment",
-  localised_name = {"companion-laser"},
+  localised_name = { "companion-laser" },
   icons =
   {
     {
@@ -546,7 +554,7 @@ local plasma_projectile =
   name = "companion-projectile",
   icon = "__companion-drones__/drone-icon.png",
   icon_size = 200,
-  flags = {"not-on-map"},
+  flags = { "not-on-map" },
   subgroup = "explosions",
   height = 1.4,
   rotatable = true,
@@ -555,8 +563,8 @@ local plasma_projectile =
   max_speed = 0.5,
   turn_speed = 0.001,
   turning_speed_increases_exponentially_with_projectile_speed = true,
-  collision_box = {{-0.1, -0.1},{0.1, 0.1}},
-  speed_modifier = {1, 0.707},
+  collision_box = { { -0.1, -0.1 }, { 0.1, 0.1 } },
+  speed_modifier = { 1, 0.707 },
   hit_at_collision_position = true,
   force_condition = "enemy",
   action =
@@ -573,7 +581,7 @@ local plasma_projectile =
         },
         {
           type = "damage",
-          damage = {amount = 20, type = "laser"}
+          damage = { amount = 20, type = "laser" }
         },
       }
     }
@@ -586,7 +594,7 @@ local companion_grid =
   name = "companion-equipment-grid",
   width = 10,
   height = 2,
-  equipment_categories = {"companion" }
+  equipment_categories = { "companion" }
 }
 
 
@@ -594,7 +602,7 @@ local shield =
 {
   type = "energy-shield-equipment",
   name = "companion-shield-equipment",
-  localised_name = {"companion-shield"},
+  localised_name = { "companion-shield" },
   take_result = "companion-shield-equipment",
   sprite =
   {
@@ -619,14 +627,14 @@ local shield =
     usage_priority = "primary-input"
   },
   energy_per_shield = "0.01MJ",
-  categories = {"companion"}
+  categories = { "companion" }
 }
 
 local shield_item =
 {
   type = "item",
   name = "companion-shield-equipment",
-  localised_name = {"companion-shield"},
+  localised_name = { "companion-shield" },
   icons =
   {
     {
@@ -670,7 +678,7 @@ local battery =
     buffer_capacity = "200000MJ",
     usage_priority = "tertiary"
   },
-  categories = {"companion"}
+  categories = { "companion" }
 }
 
 local battery_item =
@@ -697,7 +705,7 @@ local reactor =
 {
   type = "generator-equipment",
   name = "companion-reactor-equipment",
-  localised_name = {"companion-reactor"},
+  localised_name = { "companion-reactor" },
   take_result = "companion-reactor-equipment",
   sprite =
   {
@@ -719,14 +727,14 @@ local reactor =
     usage_priority = "primary-output"
   },
   power = "1MW",
-  categories = {"companion"}
+  categories = { "companion" }
 }
 
 local reactor_item =
 {
   type = "item",
   name = "companion-reactor-equipment",
-  localised_name = {"companion-reactor"},
+  localised_name = { "companion-reactor" },
   icons =
   {
     {
@@ -755,15 +763,15 @@ local recipes =
     energy_required = 15,
     ingredients =
     {
-      {type="item", name="electronic-circuit", amount=100},
-      {type="item", name="iron-gear-wheel", amount=50},
-      {type="item", name="iron-plate", amount=50},
-      {type="item", name="copper-cable", amount=50},
-      {type="item", name="raw-fish", amount=1}
+      { type = "item", name = "electronic-circuit", amount = 100 },
+      { type = "item", name = "iron-gear-wheel",    amount = 50 },
+      { type = "item", name = "iron-plate",         amount = 50 },
+      { type = "item", name = "copper-cable",       amount = 50 },
+      { type = "item", name = "raw-fish",           amount = 1 }
     },
     results =
     {
-      {type="item", name="companion", amount=1}
+      { type = "item", name = "companion", amount = 1 }
     }
   },
   {
@@ -773,12 +781,12 @@ local recipes =
     energy_required = 10,
     ingredients =
     {
-      {type="item", name="electronic-circuit", amount=100},
-      {type="item", name="iron-gear-wheel", amount=50}
+      { type = "item", name = "electronic-circuit", amount = 100 },
+      { type = "item", name = "iron-gear-wheel",    amount = 50 }
     },
     results =
     {
-      {type="item", name="companion-reactor-equipment", amount=1}
+      { type = "item", name = "companion-reactor-equipment", amount = 1 }
     }
   },
   {
@@ -788,12 +796,12 @@ local recipes =
     energy_required = 10,
     ingredients =
     {
-      {type="item", name="iron-gear-wheel", amount=20},
-      {type="item", name="copper-cable", amount=20}
+      { type = "item", name = "iron-gear-wheel", amount = 20 },
+      { type = "item", name = "copper-cable",    amount = 20 }
     },
     results =
     {
-      {type="item", name="companion-shield-equipment", amount=1}
+      { type = "item", name = "companion-shield-equipment", amount = 1 }
     }
   },
   {
@@ -803,12 +811,12 @@ local recipes =
     energy_required = 10,
     ingredients =
     {
-      {type="item", name="iron-plate", amount=20},
-      {type="item", name="iron-stick", amount=20}
+      { type = "item", name = "iron-plate", amount = 20 },
+      { type = "item", name = "iron-stick", amount = 20 }
     },
     results =
     {
-      {type="item", name="companion-roboport-equipment", amount=1}
+      { type = "item", name = "companion-roboport-equipment", amount = 1 }
     }
   },
   {
@@ -818,12 +826,12 @@ local recipes =
     energy_required = 10,
     ingredients =
     {
-      {type="item", name="iron-gear-wheel", amount=15},
-      {type="item", name="copper-cable", amount=10}
+      { type = "item", name = "iron-gear-wheel", amount = 15 },
+      { type = "item", name = "copper-cable",    amount = 10 }
     },
     results =
     {
-      {type="item", name="companion-defense-equipment", amount=1}
+      { type = "item", name = "companion-defense-equipment", amount = 1 }
     }
   }
 }
@@ -834,7 +842,7 @@ local speed_sticker =
 {
   type = "sticker",
   name = "speed-sticker",
-  flags = {"not-on-map"},
+  flags = { "not-on-map" },
   animation = util.empty_sprite(),
   duration_in_ticks = 100,
   target_movement_modifier_from = 1,
@@ -851,7 +859,7 @@ local attack_icon =
   priority = "extra-high-no-scale",
   size = 200,
   scale = 1,
-  flags = {"icon"},
+  flags = { "icon" },
 }
 
 local attack_icon_disabled =
@@ -860,14 +868,14 @@ local attack_icon_disabled =
   priority = "extra-high-no-scale",
   size = 200,
   scale = 1,
-  flags = {"icon"},
+  flags = { "icon" },
 }
 
 local attack_shortcut =
 {
   type = "shortcut",
   name = "companion-attack-toggle",
-  localised_name = {"companion-attack-toggle"},
+  localised_name = { "companion-attack-toggle" },
   order = "a[companion-drones]",
   action = "lua",
   style = "default",
@@ -885,7 +893,7 @@ local construct_icon =
   priority = "extra-high-no-scale",
   size = 200,
   scale = 1,
-  flags = {"icon"},
+  flags = { "icon" },
 }
 
 local construct_icon_disabled =
@@ -894,14 +902,14 @@ local construct_icon_disabled =
   priority = "extra-high-no-scale",
   size = 200,
   scale = 1,
-  flags = {"icon"},
+  flags = { "icon" },
 }
 
 local construct_shortcut =
 {
   type = "shortcut",
   name = "companion-construction-toggle",
-  localised_name = {"companion-construction-toggle"},
+  localised_name = { "companion-construction-toggle" },
   order = "a[companion-drones]",
   action = "lua",
   style = "default",
