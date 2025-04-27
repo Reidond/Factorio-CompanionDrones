@@ -162,7 +162,7 @@ local equipment_item =
   stack_size = 20
 }
 
-local attach_beam_graphics = require("data/beam_sprites")
+local attach_beam_graphics = require("Factorio-CompanionDrones.data.beam_sprites")
 
 local build_beam = util.copy(data.raw["beam"]["electric-beam-no-sound"])
 build_beam.name = "companion-build-beam"

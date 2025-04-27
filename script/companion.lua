@@ -68,7 +68,13 @@ local get_secret_surface = function()
   if surface then
     return surface
   end
-  surface = game.create_surface(name, {height = 1, width = 1})
+  -- Get map gen settings from the main surface (nauvis)
+  local map_gen_settings = game.surfaces[1].map_gen_settings
+  -- Set the desired small size
+  map_gen_settings.width = 1
+  map_gen_settings.height = 1
+  -- Create the surface using the modified settings
+  surface = game.create_surface(name, map_gen_settings)
   return surface
 end
 
@@ -862,10 +868,12 @@ function Companion:find_and_take_from_player(item)
   local vehicle = self.player.vehicle
   if vehicle then
     local target_inventory = get_inventory(vehicle)
-    local count = target_inventory.get_item_count(itemWithQuality)
-    if count >= item.count then
-      if self:take_item(item, vehicle) then
-        return true
+    if target_inventory then
+      local count = target_inventory.get_item_count(item.name)
+      if count >= item.count then
+        if self:take_item(item, vehicle) then
+          return true
+        end
       end
     end
     local train = vehicle.train
@@ -1186,7 +1194,7 @@ local process_specific_job_queue = function(player, player_index, player_data)
   local areas = script_data.specific_job_search_queue[player_index]
   local i, area = next(areas)
 
-  if not i then
+  if not i or not area then
     script_data.specific_job_search_queue[player_index] = nil
     return
   end
@@ -1336,6 +1344,7 @@ end
 local on_player_placed_equipment = function(event)
 
   local player = game.get_player(event.player_index)
+  if not player then return end
   --if player.opened_gui_type ~= defines.gui_type.entity then return end
 
 
@@ -1351,6 +1360,8 @@ end
 
 local on_player_removed_equipment = function(event)
   local player = game.get_player(event.player_index)
+  if not player then return end
+
   if player.opened_gui_type ~= defines.gui_type.entity then return end
 
   local opened = player.opened
@@ -1380,7 +1391,7 @@ local on_player_changed_surface = function(event)
   if not player_data then return end
 
   local player = game.get_player(event.player_index)
-  if not player.character then
+  if not player or not player.character then
     --For the space exploration satellite viewer thing...
     --If there is no character, lets just not go with the player.
     return
@@ -1417,6 +1428,8 @@ local on_player_joined_game = function(event)
   if not player_data then return end
 
   local player = game.get_player(event.player_index)
+  if not player then return end
+
   local surface = player.physical_surface
   local position = player.physical_position
 
@@ -1434,6 +1447,8 @@ local on_player_changed_force = function(event)
   if not player_data then return end
 
   local player = game.get_player(event.player_index)
+  if not player then return end
+
   local force = player.force
   for unit_number, bool in pairs (player_data.companions) do
     local companion = get_companion(unit_number)
@@ -1489,6 +1504,8 @@ end
 
 local on_player_mined_entity = function(event)
   local player = game.get_player(event.player_index)
+  if not player then return end
+
   player.remove_item{name = "companion-construction-robot", count = 1000}
 end
 
@@ -1525,6 +1542,8 @@ end
 
 local on_lua_shortcut = function(event)
   local player = game.get_player(event.player_index)
+  if not player then return end
+
   local name = event.prototype_name
   if name == "companion-attack-toggle" then
     player.set_shortcut_toggled(name, not player.is_shortcut_toggled(name))
@@ -1538,6 +1557,7 @@ local on_lua_shortcut = function(event)
 end
 
 local dissect_area_size = 32
+local max_distance = 250
 
 local dissect_and_queue_area = function(player, player_index, player_pos, area)
   local player_queue = script_data.specific_job_search_queue[player_index]
@@ -1545,24 +1565,29 @@ local dissect_and_queue_area = function(player, player_index, player_pos, area)
     player_queue = {}
     script_data.specific_job_search_queue[player_index] = player_queue
   end
+
+  -- Calculate boundaries
   local xmax = math.max(player_pos.x - max_distance, area.left_top.x)
-  local xmin = math.min(player_pos.x + max_distance, area.right_bottom.y)
+  local xmin = math.min(player_pos.x + max_distance, area.right_bottom.x)
   local ymax = math.max(player_pos.y - max_distance, area.left_top.y)
   local ymin = math.min(player_pos.y + max_distance, area.right_bottom.y)
-  player.print(string.format("area.left_top.x = "))
+
+  -- Debug print to verify boundaries
+  player.print(string.format("xmax = %.2f, xmin = %.2f, ymax = %.2f, ymin = %.2f", xmax, xmin, ymax, ymin))
 
   local count = #player_queue
-  for x = xmin, xmax, dissect_area_size do
-    for y = ymin, ymax, dissect_area_size do
+  -- Iterate over the area in smaller grids
+  for x = xmax, xmin, dissect_area_size do
+    for y = ymax, ymin, dissect_area_size do
       table.insert(player_queue, (count > 0 and math.random(count)) or 1, {{x, y}, {x + dissect_area_size, y + dissect_area_size}})
       count = count + 1
     end
   end
-
 end
 
 local on_player_deconstructed_area = function(event)
   local player = game.get_player(event.player_index)
+  if not player then return end
 
   if not player.is_shortcut_toggled("companion-construction-toggle") then
     return
@@ -1628,7 +1653,7 @@ end
 
 local on_pre_build = function(event)
   local player = game.get_player(event.player_index)
-
+  if not player then return end
   if not (player.is_cursor_blueprint()) then return end
 
   if not player.is_shortcut_toggled("companion-construction-toggle") then
@@ -1658,14 +1683,18 @@ local on_player_created = function(event)
       position = position,
       force = player.force
     }
-    entity.insert("coal")
-    entity.color = player.color
-    local grid = entity.grid
-    grid.put{name = "companion-reactor-equipment"}
-    grid.put{name = "companion-defense-equipment"}
-    grid.put{name = "companion-shield-equipment"}
-    grid.put{name = "companion-roboport-equipment"}
-    local companion = Companion.new(entity, player)
+    if entity then
+      entity.insert("coal")
+      entity.color = player.color
+      local grid = entity.grid
+      if grid then
+        grid.put{name = "companion-reactor-equipment"}
+        grid.put{name = "companion-defense-equipment"}
+        grid.put{name = "companion-shield-equipment"}
+        grid.put{name = "companion-roboport-equipment"}
+      end
+      local companion = Companion.new(entity, player)
+    end
   end
 end
 
