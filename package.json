@@ -1,0 +1,15 @@
+{
+  "name": "@reidond/factorio-companion-drones",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.5.2",
+  "devDependencies": {
+    "factoriomod-debug": "^2.0.5"
+  }
+}
